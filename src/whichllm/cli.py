@@ -12,6 +12,7 @@ This module only defines the Typer app and command signatures.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -50,6 +51,11 @@ def main(
     ),
     refresh: bool = typer.Option(
         False, "--refresh", help="Ignore cache and re-fetch models"
+    ),
+    hf_only: bool = typer.Option(
+        False,
+        "--hf-only",
+        help="Rank with Hugging Face data only (no outside leaderboards)",
     ),
     top: int = typer.Option(10, "--top", "-n", help="Number of top models to show"),
     context_length: int = typer.Option(
@@ -161,6 +167,8 @@ def main(
     ),
 ):
     """Detect hardware and recommend the best local LLMs."""
+    if hf_only:
+        os.environ["WHICHLLM_HF_ONLY"] = "1"
     return main_command(
         ctx,
         refresh=refresh,

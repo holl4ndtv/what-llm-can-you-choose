@@ -13,6 +13,8 @@ Existing imports from ``whichllm.models.benchmark`` are re-exported here.
 
 from __future__ import annotations
 
+import os
+
 from whichllm.models import benchmark_cache as _cache_module
 from whichllm.models.benchmark_cache import DEFAULT_TTL_SECONDS
 from whichllm.models.benchmark_fetch import fetch_benchmark_scores
@@ -52,7 +54,14 @@ def _sync_cache_module_globals() -> None:
 
 
 def load_benchmark_cache() -> dict[str, float] | None:
-    """Load cached benchmark scores through the legacy shim globals."""
+    """Load cached benchmark scores through the legacy shim globals.
+
+    With WHICHLLM_HF_ONLY=1 no outside leaderboard is used: ranking then rests
+    on Hugging Face data only (size, downloads, likes, release date, and the
+    scores printed on the model card).
+    """
+    if os.environ.get("WHICHLLM_HF_ONLY") == "1":
+        return {}
     _sync_cache_module_globals()
     return _cache_module.load_benchmark_cache()
 

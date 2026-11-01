@@ -28,3 +28,10 @@ def test_unknown_family_untouched():
 def test_reasoning_line_without_version_number_is_not_capped():
     scores = {"Qwen/QwQ-32B": 68.4, "Qwen/Qwen3-32B": 43.3}
     assert _enforce_generation_order(scores) == scores
+
+
+def test_hf_only_switch_drops_outside_leaderboards(monkeypatch):
+    from whichllm.models.benchmark import load_benchmark_cache
+
+    monkeypatch.setenv("WHICHLLM_HF_ONLY", "1")
+    assert load_benchmark_cache() == {}
