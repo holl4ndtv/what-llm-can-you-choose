@@ -52,10 +52,10 @@ def main(
     refresh: bool = typer.Option(
         False, "--refresh", help="Ignore cache and re-fetch models"
     ),
-    hf_only: bool = typer.Option(
+    all_sources: bool = typer.Option(
         False,
-        "--hf-only",
-        help="Rank with Hugging Face data only (no outside leaderboards)",
+        "--all-sources",
+        help="Also use outside leaderboards (LiveBench, Aider, Artificial Analysis)",
     ),
     top: int = typer.Option(10, "--top", "-n", help="Number of top models to show"),
     context_length: int = typer.Option(
@@ -167,8 +167,8 @@ def main(
     ),
 ):
     """Detect hardware and recommend the best local LLMs."""
-    if hf_only:
-        os.environ["WHICHLLM_HF_ONLY"] = "1"
+    if all_sources:
+        os.environ["WHICHLLM_ALL_SOURCES"] = "1"
     return main_command(
         ctx,
         refresh=refresh,

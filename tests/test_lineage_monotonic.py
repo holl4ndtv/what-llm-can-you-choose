@@ -30,8 +30,8 @@ def test_reasoning_line_without_version_number_is_not_capped():
     assert _enforce_generation_order(scores) == scores
 
 
-def test_hf_only_switch_drops_outside_leaderboards(monkeypatch):
+def test_hf_only_is_the_default(monkeypatch):
     from whichllm.models.benchmark import load_benchmark_cache
 
-    monkeypatch.setenv("WHICHLLM_HF_ONLY", "1")
+    monkeypatch.delenv("WHICHLLM_ALL_SOURCES", raising=False)
     assert load_benchmark_cache() == {}

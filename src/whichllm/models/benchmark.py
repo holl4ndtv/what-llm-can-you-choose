@@ -56,11 +56,12 @@ def _sync_cache_module_globals() -> None:
 def load_benchmark_cache() -> dict[str, float] | None:
     """Load cached benchmark scores through the legacy shim globals.
 
-    With WHICHLLM_HF_ONLY=1 no outside leaderboard is used: ranking then rests
-    on Hugging Face data only (size, downloads, likes, release date, and the
-    scores printed on the model card).
+    By default no outside leaderboard is used: ranking rests on Hugging Face
+    data only (size, downloads, likes, release date, and the scores printed on
+    the model card). WHICHLLM_ALL_SOURCES=1 turns the outside leaderboards back
+    on.
     """
-    if os.environ.get("WHICHLLM_HF_ONLY") == "1":
+    if os.environ.get("WHICHLLM_ALL_SOURCES") != "1":
         return {}
     _sync_cache_module_globals()
     return _cache_module.load_benchmark_cache()
