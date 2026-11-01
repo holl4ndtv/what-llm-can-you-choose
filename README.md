@@ -1,4 +1,6 @@
-# What LLM can you choose?
+<p align="center">
+  <img src="docs/images/banner.png" alt="What LLM can you choose? Scan your computer, see which AI models fit, pick an app to run them." width="100%">
+</p>
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -8,6 +10,22 @@
 It looks at your computer (chip, memory, speed), reads the live model list from [Hugging Face](https://huggingface.co) (the big public library of AI models), and ranks the models that fit, using real test scores. It has a simple web page for people who do not use a terminal, and a command line for people who do.
 
 This project is based on [whichllm](https://github.com/Andyyyy64/whichllm) by Andyyyy64 (MIT license). The ranking engine is theirs. The plain-language web page, the memory-fit bars and the rewritten explanations are new.
+
+## How it works
+
+<table>
+  <tr>
+    <td width="33%"><img src="docs/images/step-scan.png" alt="A chip being measured"><br><b>1. It reads your computer.</b><br>Chip, memory and memory speed. Nothing leaves your machine.</td>
+    <td width="33%"><img src="docs/images/step-rank.png" alt="Stacked bars of different length"><br><b>2. It ranks the models that fit.</b><br>Real test scores, live from Hugging Face. A bar shows how much memory each model uses.</td>
+    <td width="33%"><img src="docs/images/step-apps.png" alt="A chip connected to three app windows"><br><b>3. You pick an app.</b><br>Chat apps, editor add-ons and terminal agents, with install steps you can copy.</td>
+  </tr>
+</table>
+
+## See it
+
+![The page: your computer on top, the best models below](docs/images/screenshot-top.png)
+
+![Pick an app to use the model with, with copy-ready steps](docs/images/screenshot-apps.png)
 
 ## Try it in one command
 
