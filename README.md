@@ -23,10 +23,6 @@ This project is based on [whichllm](https://github.com/Andyyyy64/whichllm) by An
 
 ## See it
 
-[![Watch the 19-second video](docs/promo-poster.png)](docs/promo.mp4)
-
-[Watch the 19-second video](docs/promo.mp4)
-
 ![The page: your computer on top, the best models below](docs/images/screenshot-top.png)
 
 ![Pick an app to use the model with, with copy-ready steps](docs/images/screenshot-apps.png)
