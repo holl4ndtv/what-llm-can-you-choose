@@ -12,12 +12,32 @@ from whichllm.ui import server as ui
 
 
 FAKE = {
-    "hardware": {"gpus": [{"name": "Apple M4 Max", "vram_bytes": 1, "usable_vram_bytes": 1,
-                           "memory_bandwidth_gbps": 546.0, "shared_memory": True}],
-                 "cpu": "Apple M4 Max", "cpu_cores": 16, "ram_bytes": 1},
-    "models": [{"rank": 1, "model_id": "a/b", "quant_type": "Q4_K_M", "file_size_bytes": 1,
-                "vram_required_bytes": 2, "vram_available_bytes": 3,
-                "estimated_tok_per_sec": 5.0, "quality_score": 80.0}],
+    "hardware": {
+        "gpus": [
+            {
+                "name": "Apple M4 Max",
+                "vram_bytes": 1,
+                "usable_vram_bytes": 1,
+                "memory_bandwidth_gbps": 546.0,
+                "shared_memory": True,
+            }
+        ],
+        "cpu": "Apple M4 Max",
+        "cpu_cores": 16,
+        "ram_bytes": 1,
+    },
+    "models": [
+        {
+            "rank": 1,
+            "model_id": "a/b",
+            "quant_type": "Q4_K_M",
+            "file_size_bytes": 1,
+            "vram_required_bytes": 2,
+            "vram_available_bytes": 3,
+            "estimated_tok_per_sec": 5.0,
+            "quality_score": 80.0,
+        }
+    ],
 }
 
 
@@ -76,7 +96,9 @@ def test_hardware_endpoint(base_url):
     assert data["simulated"] is False
 
 
-@pytest.mark.parametrize("qs", ["top=0", "top=999", "context=123", "profile=nope", "gpu=%3Brm"])
+@pytest.mark.parametrize(
+    "qs", ["top=0", "top=999", "context=123", "profile=nope", "gpu=%3Brm"]
+)
 def test_bad_query_is_rejected(base_url, qs):
     url, _, _ = base_url
     status, body = _get(url + "/api/models?" + qs)
