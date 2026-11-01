@@ -217,6 +217,13 @@ models with a memory-fit bar, a "why this rank" drawer, copy-ready run commands
 to 127.0.0.1 only, uses no extra dependencies, and never starts a download.
 The first scan can take a minute. Results are cached for 15 minutes.
 
+Under the ranked list, a "Now pick an app to use it with" section helps you go from a
+model file to a working setup. Step 1 picks a runner (Ollama, LM Studio, llama.cpp,
+MLX or vLLM). Step 2 lists chat apps, editor add-ons and terminal coding agents, with
+copy-ready install and connect steps, and warns when an app needs a bigger text size
+than the list uses. The data lives in `src/whichllm/ui/static/harnesses.json`, checked
+against each project's own docs.
+
 ## Run & Snippet
 
 Try any model with a single command. No manual installs needed — whichllm

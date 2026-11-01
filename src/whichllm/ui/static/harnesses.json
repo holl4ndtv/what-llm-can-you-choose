@@ -1,0 +1,522 @@
+{
+  "checked": "2026-11-01",
+  "context_rule": {
+    "plain": "Ollama starts with a small memory window: 4k, 32k or 256k tokens, based on your video memory. Coding tools need at least 64k.",
+    "source": "https://docs.ollama.com/context-length"
+  },
+  "runners": [
+    {
+      "id": "ollama",
+      "name": "Ollama",
+      "plain": "A small background program that downloads models and serves them to other apps on your computer.",
+      "default_url": "http://localhost:11434/v1",
+      "how_to_start": "Open the Ollama app, or run: ollama serve. Then: ollama pull <model>. For tools that need a big memory window: OLLAMA_CONTEXT_LENGTH=64000 ollama serve",
+      "install": "curl -fsSL https://ollama.com/install.sh | sh",
+      "source": "https://docs.ollama.com/api/openai-compatibility"
+    },
+    {
+      "id": "lmstudio",
+      "name": "LM Studio",
+      "plain": "A desktop app to download and chat with models. It can also serve them to other apps.",
+      "default_url": "http://localhost:1234/v1",
+      "how_to_start": "Open LM Studio, go to the Developer tab and start the server. Or run: lms server start",
+      "install": "https://lmstudio.ai/download",
+      "source": "https://lmstudio.ai/docs/developer/openai-compat"
+    },
+    {
+      "id": "llamacpp",
+      "name": "llama.cpp (llama-server)",
+      "plain": "The engine many other tools are built on. Its server command gives you a web chat and a model URL.",
+      "default_url": "http://127.0.0.1:9931/v1",
+      "how_to_start": "llama-server -m model.gguf -c 32768 --port 8080  (the current README lists 9931 as the default port, older guides say 8080, so set --port yourself)",
+      "install": "curl -LsSf https://llama.app/install.sh | sh",
+      "source": "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md"
+    },
+    {
+      "id": "mlx",
+      "name": "MLX (mlx-lm server)",
+      "plain": "Apple's engine for Macs with Apple Silicon chips. Its server gives you a model URL.",
+      "default_url": "http://localhost:8080/v1",
+      "how_to_start": "mlx_lm.server --model mlx-community/Mistral-7B-Instruct-v0.3-4bit",
+      "install": "pip install mlx-lm",
+      "source": "https://github.com/ml-explore/mlx-lm/blob/main/mlx_lm/SERVER.md"
+    },
+    {
+      "id": "vllm",
+      "name": "vLLM",
+      "plain": "A fast model server for computers with a strong Nvidia or AMD graphics card, often shared by a team.",
+      "default_url": "http://localhost:8000/v1",
+      "how_to_start": "vllm serve <huggingface-model-name>",
+      "install": "uv pip install vllm --torch-backend=auto",
+      "source": "https://docs.vllm.ai/en/latest/getting_started/quickstart/"
+    }
+  ],
+  "harnesses": [
+    {
+      "id": "lmstudio-chat",
+      "name": "LM Studio chat",
+      "kind": "chat-app",
+      "plain": "A desktop app where you download a model and chat with it. Nothing else to set up.",
+      "good_for": "Easiest private chat on your own computer",
+      "needs_big_memory_window": false,
+      "min_context_tokens": null,
+      "works_with_runners": [
+        "lmstudio"
+      ],
+      "install": "https://lmstudio.ai/download",
+      "connect": "Open LM Studio, search for your model in Discover, download it, then open a new chat and pick it.\nLM Studio is the runner itself, so there is no URL to enter.",
+      "platforms": [
+        "macOS",
+        "Windows",
+        "Linux"
+      ],
+      "license": null,
+      "source": "https://lmstudio.ai/docs/app"
+    },
+    {
+      "id": "jan",
+      "name": "Jan",
+      "kind": "chat-app",
+      "plain": "A free desktop chat app that runs models on your computer. It looks like ChatGPT.",
+      "good_for": "Private ChatGPT-style chat, free and open source",
+      "needs_big_memory_window": false,
+      "min_context_tokens": null,
+      "works_with_runners": [
+        "llamacpp"
+      ],
+      "install": "https://jan.ai/download",
+      "connect": "Install Jan, open it, and let it download its first model. Pick any model from the Hub to chat.\nJan has its own built-in engine (llama.cpp), so no URL is needed. It can also serve a model at http://127.0.0.1:1337/v1 for other apps.",
+      "platforms": [
+        "macOS",
+        "Windows",
+        "Linux"
+      ],
+      "license": "Apache-2.0",
+      "source": "https://jan.ai/docs/desktop/quickstart"
+    },
+    {
+      "id": "anythingllm",
+      "name": "AnythingLLM",
+      "kind": "chat-app",
+      "plain": "A desktop app to chat with your own files and documents using a model on your computer.",
+      "good_for": "Asking questions about your own documents",
+      "needs_big_memory_window": false,
+      "min_context_tokens": null,
+      "works_with_runners": [
+        "ollama",
+        "lmstudio"
+      ],
+      "install": "https://anythingllm.com/desktop",
+      "connect": "In Settings, choose LLM provider: Ollama. Set the base URL to http://127.0.0.1:11434.\nPick your model in the same screen.",
+      "platforms": [
+        "macOS",
+        "Windows",
+        "Linux"
+      ],
+      "license": "MIT",
+      "source": "https://docs.anythingllm.com/setup/llm-configuration/local/ollama"
+    },
+    {
+      "id": "msty",
+      "name": "Msty",
+      "kind": "chat-app",
+      "plain": "A desktop chat app with its own local engine. It can reuse models you got with Ollama.",
+      "good_for": "Friendly chat that reuses your Ollama models",
+      "needs_big_memory_window": false,
+      "min_context_tokens": null,
+      "works_with_runners": [
+        "ollama"
+      ],
+      "install": "https://msty.ai",
+      "connect": "Install Msty and download a model inside the app. To reuse Ollama models, follow the how-to page linked as source.\nThe core desktop app has a free plan.",
+      "platforms": [
+        "macOS",
+        "Windows",
+        "Linux"
+      ],
+      "license": null,
+      "source": "https://docs.msty.app/how-to-guides/use-existing-ollama-models"
+    },
+    {
+      "id": "open-webui",
+      "name": "Open WebUI",
+      "kind": "server-ui",
+      "plain": "A chat website you run yourself. You open it in your browser and talk to your local model.",
+      "good_for": "Team or home chat page with accounts and files",
+      "needs_big_memory_window": false,
+      "min_context_tokens": null,
+      "works_with_runners": [
+        "ollama",
+        "llamacpp",
+        "vllm"
+      ],
+      "install": "docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v open-webui:/app/backend/data -e WEBUI_SECRET_KEY=your-secret-key --name open-webui --restart always ghcr.io/open-webui/open-webui:main",
+      "connect": "Open http://localhost:3000, then Settings > Admin > Connections. Add the Ollama URL http://host.docker.internal:11434.\nFor llama.cpp or vLLM, add an OpenAI connection with the URL ending in /v1.",
+      "platforms": [
+        "macOS",
+        "Windows",
+        "Linux"
+      ],
+      "license": "Open WebUI License (BSD-3 style with a branding rule)",
+      "source": "https://docs.openwebui.com/getting-started/quick-start/connect-a-provider/starting-with-ollama/"
+    },
+    {
+      "id": "continue",
+      "name": "Continue",
+      "kind": "editor-addon",
+      "plain": "An add-on for VS Code or JetBrains that chats about your code and edits it for you.",
+      "good_for": "Chat and edits inside your code editor",
+      "needs_big_memory_window": true,
+      "min_context_tokens": null,
+      "works_with_runners": [
+        "ollama",
+        "lmstudio"
+      ],
+      "install": "https://marketplace.visualstudio.com/items?itemName=Continue.continue",
+      "connect": "In your Continue config.yaml add under models: - name: Local, provider: ollama, model: <model-id>\nOnly add apiBase: http://<host>:11434 if Ollama runs on another machine.",
+      "platforms": [
+        "VS Code",
+        "JetBrains"
+      ],
+      "license": "Apache-2.0",
+      "source": "https://docs.continue.dev/customize/model-providers/top-level/ollama"
+    },
+    {
+      "id": "cline",
+      "name": "Cline",
+      "kind": "editor-addon",
+      "plain": "An editor add-on that plans work, edits files and runs commands. It asks before it acts.",
+      "good_for": "Careful multi-file coding help in your editor",
+      "needs_big_memory_window": true,
+      "min_context_tokens": null,
+      "works_with_runners": [
+        "ollama",
+        "lmstudio"
+      ],
+      "install": "https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev",
+      "connect": "In Cline Settings pick provider Ollama, base URL http://localhost:11434, then pick your model.\nTurn on Use Compact Prompt in Settings > Features. A terminal version installs with: npm install -g cline",
+      "platforms": [
+        "VS Code",
+        "JetBrains",
+        "Terminal",
+        "Desktop"
+      ],
+      "license": "Apache-2.0",
+      "source": "https://docs.cline.bot/provider-config/ollama"
+    },
+    {
+      "id": "kilo-code",
+      "name": "Kilo Code",
+      "kind": "editor-addon",
+      "plain": "A code editor add-on, also with a terminal version, that writes and edits code with a model.",
+      "good_for": "Coding help in VS Code or the terminal",
+      "needs_big_memory_window": true,
+      "min_context_tokens": 32000,
+      "works_with_runners": [
+        "ollama",
+        "lmstudio"
+      ],
+      "install": "https://marketplace.visualstudio.com/items?itemName=kilocode.Kilo-Code",
+      "connect": "Run ollama serve, then in Kilo Code choose the Ollama provider (not Ollama Cloud) and pick your model, for example ollama/qwen3-coder:30b.\nSet Context Window Size (num_ctx) to 32768 or more.",
+      "platforms": [
+        "VS Code",
+        "Terminal"
+      ],
+      "license": "MIT",
+      "source": "https://kilo.ai/docs/ai-providers/ollama"
+    },
+    {
+      "id": "zed",
+      "name": "Zed",
+      "kind": "editor-addon",
+      "plain": "A fast code editor with a built-in AI helper. It can use a model on your computer.",
+      "good_for": "A modern editor with built-in AI chat and edits",
+      "needs_big_memory_window": true,
+      "min_context_tokens": null,
+      "works_with_runners": [
+        "ollama",
+        "lmstudio",
+        "llamacpp"
+      ],
+      "install": "https://zed.dev/download",
+      "connect": "Run ollama pull mistral and keep Ollama running. In Zed, pick an Ollama model in the model menu.\nZed asks Ollama for only 4096 tokens by default. Set language_models.ollama.context_window to 32768 in settings.",
+      "platforms": [
+        "macOS",
+        "Linux",
+        "Windows"
+      ],
+      "license": null,
+      "source": "https://zed.dev/docs/ai/use-a-local-model"
+    },
+    {
+      "id": "goose",
+      "name": "Goose",
+      "kind": "terminal-agent",
+      "plain": "A free helper that codes, runs commands and uses tools. Desktop app and terminal versions exist.",
+      "good_for": "General tasks and coding with tools",
+      "needs_big_memory_window": true,
+      "min_context_tokens": null,
+      "works_with_runners": [
+        "ollama",
+        "lmstudio"
+      ],
+      "install": "curl -fsSL https://github.com/aaif-goose/goose/releases/download/stable/download_cli.sh | bash",
+      "connect": "Run: goose configure. Choose Configure Providers, then Ollama. Enter the host or leave it empty for localhost:11434.\nUse a model with tool calling. Models without it can only chat.",
+      "platforms": [
+        "macOS",
+        "Linux",
+        "Windows"
+      ],
+      "license": "Apache-2.0",
+      "source": "https://goose-docs.ai/docs/getting-started/providers"
+    },
+    {
+      "id": "opencode",
+      "name": "OpenCode",
+      "kind": "terminal-agent",
+      "plain": "A coding helper that lives in your terminal. It reads your project, edits files and runs commands.",
+      "good_for": "Open source terminal coding agent with many models",
+      "needs_big_memory_window": true,
+      "min_context_tokens": 64000,
+      "works_with_runners": [
+        "ollama",
+        "lmstudio",
+        "llamacpp"
+      ],
+      "install": "curl -fsSL https://opencode.ai/install | bash",
+      "connect": "Put this in opencode.json: {\"$schema\":\"https://opencode.ai/config.json\",\"provider\":{\"ollama\":{\"npm\":\"@ai-sdk/openai-compatible\",\"name\":\"Ollama (local)\",\"options\":{\"baseURL\":\"http://localhost:11434/v1\"},\"models\":{\"<model-id>\":{\"name\":\"<model-id>\"}}}}}\nOr run: ollama launch opencode. Ollama says OpenCode needs 64k context or more.",
+      "platforms": [
+        "macOS",
+        "Linux",
+        "Windows"
+      ],
+      "license": "MIT",
+      "source": "https://opencode.ai/docs/providers/"
+    },
+    {
+      "id": "aider",
+      "name": "Aider",
+      "kind": "terminal-agent",
+      "plain": "A terminal tool where you chat and it edits your code files and saves the changes in git.",
+      "good_for": "Small, safe code edits with git commits",
+      "needs_big_memory_window": false,
+      "min_context_tokens": null,
+      "works_with_runners": [
+        "ollama",
+        "lmstudio"
+      ],
+      "install": "python -m pip install aider-install && aider-install",
+      "connect": "export OLLAMA_API_BASE=http://127.0.0.1:11434\naider --model ollama_chat/<model>   (Aider sizes the context window for each request itself)",
+      "platforms": [
+        "macOS",
+        "Linux",
+        "Windows"
+      ],
+      "license": "Apache-2.0",
+      "source": "https://aider.chat/docs/llms/ollama.html"
+    },
+    {
+      "id": "qwen-code",
+      "name": "Qwen Code",
+      "kind": "terminal-agent",
+      "plain": "A terminal coding helper from the Qwen team. It works well with Qwen models and also with others.",
+      "good_for": "Terminal coding agent tuned for Qwen models",
+      "needs_big_memory_window": true,
+      "min_context_tokens": null,
+      "works_with_runners": [
+        "ollama",
+        "vllm"
+      ],
+      "install": "npm install -g @qwen-code/qwen-code@latest",
+      "connect": "Run qwen, then /auth and choose Custom Provider. Or add to ~/.qwen/settings.json under modelProviders.openai: {\"id\":\"<model-id>\",\"name\":\"<model-id>\",\"baseUrl\":\"http://localhost:11434/v1\",\"envKey\":\"OLLAMA_API_KEY\"}\nThen set env OLLAMA_API_KEY=ollama (Ollama ignores the key, Qwen Code wants one).",
+      "platforms": [
+        "macOS",
+        "Linux",
+        "Windows"
+      ],
+      "license": "Apache-2.0",
+      "source": "https://qwenlm.github.io/qwen-code-docs/en/users/configuration/auth/"
+    },
+    {
+      "id": "codex-cli",
+      "name": "Codex CLI",
+      "kind": "terminal-agent",
+      "plain": "OpenAI's terminal coding helper. It can also talk to a model on your own computer.",
+      "good_for": "Terminal coding agent with a local model option",
+      "needs_big_memory_window": true,
+      "min_context_tokens": 64000,
+      "works_with_runners": [
+        "ollama",
+        "lmstudio"
+      ],
+      "install": "npm install -g @openai/codex",
+      "connect": "Add oss_provider = \"ollama\" (or \"lmstudio\") to your Codex config.toml, then run: codex --oss\nOr run: ollama launch codex. Ollama says Codex needs a 64k context window.",
+      "platforms": [
+        "macOS",
+        "Linux",
+        "Windows"
+      ],
+      "license": "Apache-2.0",
+      "source": "https://developers.openai.com/codex/config-advanced"
+    },
+    {
+      "id": "claude-code",
+      "name": "Claude Code",
+      "kind": "terminal-agent",
+      "plain": "Anthropic's terminal coding helper. Ollama can stand in for the cloud, so a local model does the work.",
+      "good_for": "Terminal coding agent through Ollama's Claude-style endpoint",
+      "needs_big_memory_window": true,
+      "min_context_tokens": 64000,
+      "works_with_runners": [
+        "ollama"
+      ],
+      "install": "curl -fsSL https://claude.ai/install.sh | bash",
+      "connect": "export ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_API_KEY=\"\" ANTHROPIC_BASE_URL=http://localhost:11434 then run: claude --model <model>\nOr run: ollama launch claude. Use a model with tool calling and 64k+ context.",
+      "platforms": [
+        "macOS",
+        "Linux",
+        "Windows"
+      ],
+      "license": null,
+      "source": "https://docs.ollama.com/integrations/claude-code"
+    },
+    {
+      "id": "crush",
+      "name": "Crush",
+      "kind": "terminal-agent",
+      "plain": "A good-looking terminal coding helper from Charm. It works with many models, local ones included.",
+      "good_for": "Polished terminal coding agent",
+      "needs_big_memory_window": true,
+      "min_context_tokens": null,
+      "works_with_runners": [
+        "ollama",
+        "llamacpp",
+        "lmstudio"
+      ],
+      "install": "brew install charmbracelet/tap/crush",
+      "connect": "Add this line to ~/.config/crush/crushrc: provider add ollama --name Ollama --type ollama --base-url \"http://localhost:11434/v1/\"\nCrush then fills in the model list by itself. For llama.cpp use --type llamacpp with your server URL.",
+      "platforms": [
+        "macOS",
+        "Linux",
+        "Windows",
+        "FreeBSD"
+      ],
+      "license": "FSL-1.1-MIT (free to use, becomes MIT later)",
+      "source": "https://github.com/charmbracelet/crush/blob/main/README.md"
+    },
+    {
+      "id": "nanocoder",
+      "name": "Nanocoder",
+      "kind": "terminal-agent",
+      "plain": "A small open source coding helper for the terminal, made by a community group. Local first.",
+      "good_for": "Light local-first terminal coding agent",
+      "needs_big_memory_window": true,
+      "min_context_tokens": null,
+      "works_with_runners": [
+        "ollama"
+      ],
+      "install": "npm install -g @nanocollective/nanocoder",
+      "connect": "Run: nanocoder --provider ollama --model <model>\nAny OpenAI-compatible URL also works, see the README for the provider setup.",
+      "platforms": [
+        "macOS",
+        "Linux",
+        "Windows"
+      ],
+      "license": "MIT",
+      "source": "https://github.com/Nano-Collective/nanocoder/blob/main/README.md"
+    },
+    {
+      "id": "pi",
+      "name": "Pi",
+      "kind": "terminal-agent",
+      "plain": "A tiny terminal coding helper with four basic tools. You add extra features yourself.",
+      "good_for": "Minimal, hackable terminal coding agent",
+      "needs_big_memory_window": true,
+      "min_context_tokens": null,
+      "works_with_runners": [
+        "ollama",
+        "lmstudio",
+        "vllm",
+        "llamacpp"
+      ],
+      "install": "curl -fsSL https://pi.dev/install.sh | sh",
+      "connect": "Save as models.json in ~/.pi/agent: {\"providers\":{\"ollama\":{\"baseUrl\":\"http://localhost:11434/v1\",\"api\":\"openai-completions\",\"apiKey\":\"ollama\",\"models\":[{\"id\":\"<model-id>\"}]}}}\nOr run: ollama launch pi",
+      "platforms": [
+        "macOS",
+        "Linux",
+        "Windows"
+      ],
+      "license": "MIT",
+      "source": "https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/models.md"
+    },
+    {
+      "id": "hermes-agent",
+      "name": "Hermes Agent",
+      "kind": "terminal-agent",
+      "plain": "A helper from Nous Research that remembers what it learns. It works in the terminal and chat apps.",
+      "good_for": "A long-running agent that learns your habits",
+      "needs_big_memory_window": true,
+      "min_context_tokens": 64000,
+      "works_with_runners": [
+        "ollama",
+        "lmstudio",
+        "vllm"
+      ],
+      "install": "curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash",
+      "connect": "Run: hermes model, choose Custom endpoint, enter http://localhost:11434/v1, skip the key, enter your model name.\nHermes refuses to start with less than 64,000 tokens of context. Start Ollama with OLLAMA_CONTEXT_LENGTH=64000.",
+      "platforms": [
+        "macOS",
+        "Linux",
+        "Windows"
+      ],
+      "license": "MIT",
+      "source": "https://hermes-agent.nousresearch.com/docs/integrations/providers"
+    },
+    {
+      "id": "openclaw",
+      "name": "OpenClaw",
+      "kind": "server-ui",
+      "plain": "A personal assistant that runs on your computer and answers you in your chat apps.",
+      "good_for": "A private assistant reachable from your phone chats",
+      "needs_big_memory_window": true,
+      "min_context_tokens": 64000,
+      "works_with_runners": [
+        "ollama",
+        "lmstudio",
+        "vllm"
+      ],
+      "install": "curl -fsSL https://openclaw.ai/install.sh | bash",
+      "connect": "Run: ollama launch openclaw. By hand, set baseUrl to http://127.0.0.1:11434 with no /v1 at the end.\nThe /v1 URL breaks tool calling in OpenClaw. Use a 64k+ context window.",
+      "platforms": [
+        "macOS",
+        "Linux",
+        "Windows"
+      ],
+      "license": "MIT",
+      "source": "https://docs.openclaw.ai/providers/ollama"
+    },
+    {
+      "id": "openhands",
+      "name": "OpenHands",
+      "kind": "server-ui",
+      "plain": "A coding helper you open in your browser. It works on tasks in a safe box.",
+      "good_for": "Bigger coding tasks in a browser, in a safe sandbox",
+      "needs_big_memory_window": true,
+      "min_context_tokens": 22000,
+      "works_with_runners": [
+        "lmstudio",
+        "ollama",
+        "vllm"
+      ],
+      "install": "docker run -it --rm --pull=always -e AGENT_SERVER_IMAGE_REPOSITORY=ghcr.io/openhands/agent-server -e AGENT_SERVER_IMAGE_TAG=1.26.0-python -e LOG_ALL_EVENTS=true -v /var/run/docker.sock:/var/run/docker.sock -v ~/.openhands:/.openhands -p 3000:3000 --add-host host.docker.internal:host-gateway --name openhands-app docker.openhands.dev/openhands/openhands:1.8",
+      "connect": "Open http://localhost:3000, then LLM Settings > Advanced. Custom Model: openai/<model-id>, Base URL: http://host.docker.internal:1234/v1, API Key: local-llm\nThat is the LM Studio example. Docs say use at least about 22k tokens of context, 32k or more if you can.",
+      "platforms": [
+        "macOS",
+        "Linux",
+        "Windows"
+      ],
+      "license": "MIT",
+      "source": "https://docs.openhands.dev/openhands/usage/llms/local-llms"
+    }
+  ]
+}

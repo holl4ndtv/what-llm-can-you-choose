@@ -125,3 +125,52 @@ def test_every_simulated_gpu_has_plain_label():
     js = (Path(ui.__file__).parent / "static" / "app.js").read_text(encoding="utf-8")
     for g in ui.SIMULATE_GPUS:
         assert '"' + g + '":' in js, g
+
+
+def _harness_data():
+    from pathlib import Path
+
+    p = Path(ui.__file__).parent / "static" / "harnesses.json"
+    return json.loads(p.read_text(encoding="utf-8"))
+
+
+def _all_strings(node):
+    if isinstance(node, str):
+        yield node
+    elif isinstance(node, dict):
+        for k, v in node.items():
+            yield k
+            yield from _all_strings(v)
+    elif isinstance(node, list):
+        for v in node:
+            yield from _all_strings(v)
+
+
+def test_harnesses_json_parses_and_runner_ids_exist():
+    data = _harness_data()
+    assert data["checked"] and data["context_rule"]["plain"]
+    runner_ids = {r["id"] for r in data["runners"]}
+    assert len(runner_ids) == len(data["runners"])
+    assert runner_ids == {"ollama", "lmstudio", "llamacpp", "mlx", "vllm"}
+    for h in data["harnesses"]:
+        assert set(h["works_with_runners"]) <= runner_ids, h["id"]
+
+
+def test_every_harness_has_plain_connect_and_source():
+    for h in _harness_data()["harnesses"]:
+        for key in ("plain", "connect", "source", "install", "name"):
+            assert isinstance(h.get(key), str) and h[key].strip(), (h["id"], key)
+        assert h["source"].startswith("https://"), h["id"]
+        assert h["kind"] in {"chat-app", "server-ui", "editor-addon", "terminal-agent"}
+
+
+def test_harnesses_json_has_no_em_or_en_dash():
+    for s in _all_strings(_harness_data()):
+        assert "—" not in s and "–" not in s, s
+
+
+def test_server_serves_harnesses_json(base_url):
+    url, _, _ = base_url
+    status, body = _get(url + "/harnesses.json")
+    assert status == 200
+    assert json.loads(body) == _harness_data()

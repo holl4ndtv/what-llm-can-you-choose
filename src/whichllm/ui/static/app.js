@@ -267,6 +267,7 @@
 
   function openDrawer(m, idx, toRun, opener) {
     lastOpener = opener;
+    state.pick = m.model_id;
     var id = splitId(m.model_id), fit = fitFor(m), body = $("drawer-body");
     clear(body);
     var models = state.data.models, above = idx > 0 ? models[idx - 1] : null;
@@ -345,6 +346,13 @@
         c.note ? h("p", { style: "font-size:14px;color:var(--muted);margin-top:6px", text: c.note }) : null));
     });
     if (cmds.length === 1) runSec.appendChild(h("p", { style: "margin-top:14px;font-size:15px", text: "No ready-made file was found for Ollama or llama.cpp. The whichllm command searches for one when you start it." }));
+    var useLink = h("a", { class: "drawer-link use-link", href: "#harness" }, "Use it with an app or a code editor");
+    useLink.addEventListener("click", function (e) {
+      e.preventDefault();
+      drawer.close();
+      scrollToHarness();
+    });
+    runSec.appendChild(h("p", { style: "margin-top:14px;font-size:15px" }, useLink));
     body.appendChild(runSec);
 
     /* facts */
@@ -436,6 +444,7 @@
         renderLedger();
         $("age").textContent = ago(res.body.age_seconds || 0);
         setBusy(false);
+        renderHarness();
       }).catch(function (err) {
         if (window.console) console.error(err);
         if (token === state.token) showError("Could not reach the local server. Is whichllm ui still running?");
@@ -546,7 +555,196 @@
     $("f-fit").addEventListener("change", function (e) { state.q.fit = e.target.checked ? "full-gpu" : "any"; load(false); });
   }
 
+  /* ---------- use it with: runners and apps ---------- */
+  var HS = { data: null, runner: "ollama", tab: "chat", open: null, failed: false };
+  var TABS = [
+    { id: "chat", label: "Chat with it", kinds: ["chat-app", "server-ui"] },
+    { id: "editor", label: "In my code editor", kinds: ["editor-addon"] },
+    { id: "terminal", label: "Write code from the terminal", kinds: ["terminal-agent"] },
+    { id: "all", label: "All", kinds: null }
+  ];
+  var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  function niceDate(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || "");
+    return m ? parseInt(m[3], 10) + " " + MONTHS[parseInt(m[2], 10) - 1] + " " + m[1] : (iso || "");
+  }
+  function scrollToHarness() {
+    var t = $("harness");
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    t.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+    t.focus({ preventScroll: true });
+  }
+  /* true = Apple chip, false = not Apple, null = not known yet */
+  function isApple() {
+    if (!state.data || !state.data.hardware) return null;
+    var gpus = state.data.hardware.gpus || [];
+    if (!gpus.length) return /apple/i.test(state.data.hardware.cpu || "") ? true : false;
+    return gpus.some(function (g) { return /apple|\bM[1-9]\b/i.test(g.name); });
+  }
+  function needTokens(a) {
+    return a.min_context_tokens || (a.needs_big_memory_window ? 64000 : 0);
+  }
+  function pagesFor(tokens) {
+    var p = tokens / 655;
+    return p >= 10 ? Math.round(p / 5) * 5 : Math.max(1, Math.round(p));
+  }
+  function kLabel(tokens) { return Math.round(tokens / 1000) + "k"; }
+  function pickModel() {
+    var ms = (state.data && state.data.models) || [];
+    for (var i = 0; i < ms.length; i++) if (ms[i].model_id === state.pick) return ms[i];
+    return ms[0] || null;
+  }
+  function codeBox(label, text, what) {
+    var btn = h("button", { type: "button", class: "btn", "aria-label": "Copy " + what }, "Copy");
+    btn.addEventListener("click", function () { copy(text, btn); });
+    return h("div", { class: "cmd hcode" },
+      h("div", { class: "cmd-top" }, h("span", { text: label }), btn),
+      h("pre", null, h("code", { text: text })));
+  }
+  function runnerById(id) {
+    var rs = HS.data.runners;
+    for (var i = 0; i < rs.length; i++) if (rs[i].id === id) return rs[i];
+    return rs[0];
+  }
+
+  /* the buttons are rebuilt on every click, so give keyboard focus back to the same one */
+  function refocus(parent, id) {
+    var el = document.querySelector(parent + ' [data-id="' + id + '"]');
+    if (el) el.focus({ preventScroll: true });
+  }
+  function renderRunners() {
+    var box = $("h-runners"), det = $("h-runner-detail");
+    clear(box); clear(det);
+    var apple = isApple();
+    var list = HS.data.runners.filter(function (r) { return r.id !== "mlx" || apple !== false; });
+    if (!list.some(function (r) { return r.id === HS.runner; })) HS.runner = "ollama";
+    list.forEach(function (r) {
+      var on = r.id === HS.runner;
+      var b = h("button", { type: "button", class: "rcard" + (on ? " on" : ""), "aria-pressed": on ? "true" : "false",
+        "data-id": r.id,
+        onclick: function () { HS.runner = r.id; HS.open = null; renderRunners(); renderApps(); refocus("#h-runners", r.id); } },
+        h("span", { class: "rname", text: r.name }),
+        h("span", { class: "rstate", text: on ? "Chosen" : "Choose" }));
+      box.appendChild(b);
+    });
+    var r = runnerById(HS.runner);
+    det.appendChild(h("h4", { class: "hsub", text: r.name }));
+    det.appendChild(h("p", { text: r.plain }));
+    if (r.id === "mlx" && apple === null) det.appendChild(h("p", { class: "note", text: "This one only works on Apple chips (M1 and newer). Skip it on other computers." }));
+    det.appendChild(codeBox("Install", r.install, "the " + r.name + " install line"));
+    det.appendChild(codeBox("How to start", r.how_to_start, "the " + r.name + " start steps"));
+    var m = pickModel();
+    if (m && (r.id === "ollama" || r.id === "llamacpp")) {
+      var want = r.id === "ollama" ? "Ollama" : "llama.cpp";
+      commandsFor(m).forEach(function (c) {
+        if (c.name === want) det.appendChild(codeBox("Run " + splitId(m.model_id).name, c.text, "the " + want + " command for " + splitId(m.model_id).name));
+      });
+    }
+    det.appendChild(codeBox("Address that apps use", r.default_url, "the " + r.name + " address"));
+    det.appendChild(h("p", { class: "note", text: "Apps connect to this address. It only works while the runner is running." }));
+    det.appendChild(h("p", { class: "note" }, h("a", { class: "drawer-link", href: r.source, target: "_blank", rel: "noopener noreferrer" }, "Source for " + r.name)));
+  }
+
+  function renderTabs() {
+    var box = $("h-tabs");
+    clear(box);
+    TABS.forEach(function (t) {
+      box.appendChild(h("button", { type: "button", class: "pill" + (t.id === HS.tab ? " on" : ""), "aria-pressed": t.id === HS.tab ? "true" : "false", "data-id": t.id,
+        onclick: function () { HS.tab = t.id; HS.open = null; renderTabs(); renderApps(); refocus("#h-tabs", t.id); } }, t.label));
+    });
+  }
+
+  function appCard(a) {
+    var runner = runnerById(HS.runner);
+    var works = a.works_with_runners.indexOf(HS.runner) >= 0;
+    var open = HS.open === a.id;
+    var need = needTokens(a);
+    var chips = h("div", { class: "chips" });
+    (a.platforms || []).forEach(function (p) { chips.appendChild(h("span", { class: "chip", text: p })); });
+    if (a.license) chips.appendChild(h("span", { class: "chip", text: a.license }));
+    var chipsFit = h("div", { class: "chips" },
+      h("span", { class: "chip " + (works ? "yes" : "no"), text: works ? "Works with your runner" : "Not listed for " + runner.name }));
+    if (a.needs_big_memory_window) chipsFit.appendChild(h("span", { class: "chip big", text: "Needs " + kLabel(need) + " memory" }));
+
+    var card = h("article", { class: "app" + (open ? " open" : ""), id: "app-" + a.id });
+    card.appendChild(h("h4", { class: "aname", text: a.name }));
+    card.appendChild(h("p", { class: "aplain", text: a.plain }));
+    card.appendChild(h("p", { class: "agood" }, h("strong", { text: "Good for: " }), a.good_for));
+    card.appendChild(chipsFit);
+    card.appendChild(chips);
+    if (need && state.q.context < need) {
+      card.appendChild(h("p", { class: "warnbox", role: "note",
+        text: "This app needs about " + pagesFor(need) + " pages of text at once. Your list is set to " + ctxShort(state.q.context) + ". Pick a bigger size above." }));
+    }
+    var panelId = "panel-" + a.id;
+    var btn = h("button", { type: "button", class: "btn btn-set", "aria-expanded": open ? "true" : "false", "aria-controls": panelId,
+      onclick: function () { HS.open = HS.open === a.id ? null : a.id; renderApps(); var again = $("app-" + a.id); if (again) { var b2 = again.querySelector(".btn-set"); if (b2) b2.focus({ preventScroll: true }); } } },
+      open ? "Hide setup" : "Set it up");
+    card.appendChild(btn);
+    var panel = h("div", { id: panelId, class: "apanel", hidden: !open });
+    if (open) {
+      panel.appendChild(codeBox("Install", a.install, "the " + a.name + " install line"));
+      panel.appendChild(codeBox("Connect it", a.connect, "the " + a.name + " connect steps"));
+      panel.appendChild(h("p", { class: "note" }, h("a", { class: "drawer-link", href: a.source, target: "_blank", rel: "noopener noreferrer" }, "Source for " + a.name)));
+    }
+    card.appendChild(panel);
+    return card;
+  }
+
+  function renderApps() {
+    var box = $("h-apps");
+    clear(box);
+    var tab = TABS.filter(function (t) { return t.id === HS.tab; })[0];
+    var list = HS.data.harnesses.filter(function (a) { return !tab.kinds || tab.kinds.indexOf(a.kind) >= 0; });
+    $("h-count").textContent = list.length + " apps. Easiest first.";
+    list.forEach(function (a) { box.appendChild(appCard(a)); });
+  }
+
+  function buildHarness() {
+    var body = $("harness-body");
+    clear(body);
+    body.appendChild(h("p", { class: "hlead" },
+      "A model alone is just a file. A runner starts it on your computer. An app is where you chat or write code. Step 1: pick a runner. Step 2: pick an app.",
+      infoBtn("h-h-words", "What runner and app mean")));
+    body.appendChild(hintBox("h-h-words", "A runner is a small program that loads the model and answers questions. An app is the screen or tool where you type and read the answers."));
+    body.appendChild(h("h3", { class: "hstep", text: "Step 1. Pick a runner" }));
+    body.appendChild(h("div", { id: "h-runners", class: "rgrid" }));
+    body.appendChild(h("div", { id: "h-runner-detail", class: "rdetail" }));
+    body.appendChild(h("h3", { class: "hstep", text: "Step 2. Pick an app" }));
+    body.appendChild(h("p", { class: "hrule" },
+      "Some apps need a big memory window (how much text the AI can read at once). ",
+      HS.data.context_rule.plain + " ",
+      infoBtn("h-h-rule", "More about the memory window"),
+      " ",
+      h("a", { class: "drawer-link", href: HS.data.context_rule.source, target: "_blank", rel: "noopener noreferrer" }, "Source")));
+    body.appendChild(hintBox("h-h-rule", "A token is a small piece of a word. 64k tokens is about 100 pages. A bigger window uses more memory, so choose a bigger size in the list settings above."));
+    body.appendChild(h("div", { id: "h-tabs", class: "pills", role: "group", "aria-label": "Kind of app" }));
+    body.appendChild(h("p", { id: "h-count", class: "note", "aria-live": "polite" }));
+    body.appendChild(h("div", { id: "h-apps", class: "agrid" }));
+    body.appendChild(h("p", { class: "hfoot",
+      text: "Checked against each project's own docs on " + niceDate(HS.data.checked) + ". We read the docs but did not run every step on a real computer. Tools change fast, so open the Source link if a step fails." }));
+  }
+
+  function renderHarness() {
+    if (!HS.data) return;
+    if (!$("h-apps")) buildHarness();
+    renderRunners(); renderTabs(); renderApps();
+  }
+  function loadHarness() {
+    fetch("harnesses.json").then(function (r) {
+      if (!r.ok) throw new Error("status " + r.status);
+      return r.json();
+    }).then(function (j) { HS.data = j; renderHarness(); })
+      .catch(function (err) {
+        if (window.console) console.error(err);
+        var b = $("harness-body");
+        clear(b);
+        b.appendChild(h("p", { class: "say", text: "The list of apps did not load. Reload the page to try again." }));
+      });
+  }
+
   function init() {
+    loadHarness();
     drawer = $("drawer");
     drawer.addEventListener("click", function (e) { if (e.target === drawer) drawer.close(); });
     drawer.addEventListener("close", function () { if (lastOpener && document.contains(lastOpener)) lastOpener.focus(); });
