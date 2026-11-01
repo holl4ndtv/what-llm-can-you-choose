@@ -1,20 +1,25 @@
-# whichllm
+# What LLM can you choose?
 
-[![PyPI version](https://img.shields.io/pypi/v/whichllm)](https://pypi.org/project/whichllm/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://github.com/Andyyyy64/whichllm/actions/workflows/test.yml/badge.svg)](https://github.com/Andyyyy64/whichllm/actions/workflows/test.yml)
-[![Sponsor](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-EA4AAA?logo=githubsponsors)](https://github.com/sponsors/Andyyyy64)
 
-<p align="center">
-  <a href="https://trendshift.io/repositories/30336" target="_blank"><img src="https://trendshift.io/api/badge/repositories/30336" alt="Andyyyy64%2Fwhichllm | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
-</p>
+**Find the best AI model your computer can run, explained in plain words.**
 
-**Find the best local LLM that actually runs on your hardware.**
+It looks at your computer (chip, memory, speed), reads the live model list from [Hugging Face](https://huggingface.co) (the big public library of AI models), and ranks the models that fit, using real test scores. It has a simple web page for people who do not use a terminal, and a command line for people who do.
 
-Auto-detects your GPU/CPU/RAM and ranks the top models from HuggingFace that fit your system.
+This project is based on [whichllm](https://github.com/Andyyyy64/whichllm) by Andyyyy64 (MIT license). The ranking engine is theirs. The plain-language web page, the memory-fit bars and the rewritten explanations are new.
 
-[日本語版はこちら](docs/README.ja.md)
+## Try it in one command
+
+You need [uv](https://docs.astral.sh/uv/) (a free Python tool). Then run:
+
+```bash
+uvx --from git+https://github.com/holl4ndtv/what-llm-can-you-choose what-llm-can-you-choose ui
+```
+
+Your browser opens a page with your computer on top and the best models below it. Nothing is downloaded or changed on your machine. To get a copy of the code instead, use "Code > Download ZIP" on GitHub.
+
+The rest of this page is the original command-line guide. The command is `whichllm` or `what-llm-can-you-choose`, they are the same.
 
 ## Quick start
 
@@ -198,6 +203,19 @@ whichllm is built to get right.
 - **Hardware planning** — Reverse lookup: `whichllm plan "llama 3 70b"`
 - **Upgrade planning** — Compare your current machine with candidate GPUs
 - **JSON output** — Pipe-friendly: `whichllm --json`
+
+## Web UI
+
+```bash
+whichllm ui            # opens http://127.0.0.1:8765
+whichllm ui --port 9000 --no-browser
+```
+
+A local page called "What LLM can you choose?". It shows your hardware, the ranked
+models with a memory-fit bar, a "why this rank" drawer, copy-ready run commands
+(whichllm, Ollama, llama.cpp), and a menu to simulate a different GPU. It binds
+to 127.0.0.1 only, uses no extra dependencies, and never starts a download.
+The first scan can take a minute. Results are cached for 15 minutes.
 
 ## Run & Snippet
 
@@ -476,7 +494,7 @@ src/whichllm/
 ## Development
 
 ```bash
-git clone https://github.com/Andyyyy64/whichllm.git
+git clone https://github.com/holl4ndtv/what-llm-can-you-choose.git
 cd whichllm
 uv sync --locked --dev
 uv run whichllm
@@ -487,22 +505,6 @@ uv run pytest
 
 Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-## Support
-
-If whichllm helped you find a model or avoid a bad hardware guess,
-sponsoring is appreciated. It helps keep the project maintained: hardware
-reports, packaging, test fixtures, benchmark updates, and support for more
-machines.
-
-whichllm will stay open-source either way. Issues and PRs are always welcome.
-
-Useful? A GitHub star helps other people find it, and I'd genuinely like to
-know what it picked for your rig. Drop it in [Issues](https://github.com/Andyyyy64/whichllm/issues).
-
-## Star History
-
-[![Star History Chart](https://star-history.dera.page/svg?repos=Andyyyy64/whichllm&type=Date)](https://star-history.dera.page/#Andyyyy64/whichllm&Date)
-
 ## Requirements
 
 - Python 3.11+
@@ -511,4 +513,4 @@ know what it picked for your rig. Drop it in [Issues](https://github.com/Andyyyy
 
 ## License
 
-MIT
+MIT. Copyright (c) 2026 Andyyyy64 (original whichllm) and Yauhen Massalski. See [LICENSE](LICENSE).

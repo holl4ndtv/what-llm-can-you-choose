@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" role="img" aria-labelledby="title">
+  <title id="title">What LLM can you choose?</title>
+  <!-- A paper tile keeps the chip legible on both light and dark tab bars. -->
+  <rect width="32" height="32" rx="6" fill="#F7F4EE"/>
+  <g fill="none" stroke="#22241F" stroke-width="2">
+    <path d="M6 6H22L26 10V26H6Z"/>
+    <path d="M12 2V6M20 2V6M12 26V30M20 26V30M2 12H6M2 20H6M26 12H30M26 20H30"/>
+    <path d="M11 11H21V21H11Z"/>
+  </g>
+  <path d="M12 17H16V14H20V20H12Z" fill="#E4572E"/>
+</svg>

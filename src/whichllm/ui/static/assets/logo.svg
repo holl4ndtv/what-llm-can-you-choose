@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="540" height="72" viewBox="0 0 540 72" role="img" aria-labelledby="title desc">
+  <title id="title">What LLM can you choose?</title>
+  <desc id="desc">Memory fit gauge beside the What LLM can you choose? wordmark.</desc>
+  <g transform="translate(0 4)">
+  <g fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="miter">
+    <path d="M12 12H44L52 20V52H12Z"/>
+    <path d="M24 4V12M40 4V12M24 52V60M40 52V60M4 24H12M4 40H12M52 24H60M52 40H60"/>
+    <path d="M22 22H42V42H22Z" stroke-width="2"/>
+  </g>
+  <path d="M23 33H32V28H41V41H23Z" fill="#E4572E"/>
+  </g>
+  <text x="82" y="47" fill="currentColor" font-family="'Fraunces','Iowan Old Style',Georgia,serif" font-size="38" font-weight="400" letter-spacing="-1">What LLM can you choose?</text>
+</svg>

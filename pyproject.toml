@@ -1,13 +1,11 @@
 [project]
-name = "whichllm"
-version = "0.5.23"
-description = "Find the best LLM that runs on your hardware"
-authors = [{name = "Andyyyy64"}]
+name = "what-llm-can-you-choose"
+version = "0.1.0"
+description = "Find the best AI model your computer can run, explained in plain words. Based on whichllm by Andyyyy64."
+authors = [{name = "Yauhen Massalski"}, {name = "Andyyyy64"}]
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
-homepage = "https://github.com/Andyyyy64/whichllm"
-repository = "https://github.com/Andyyyy64/whichllm"
 keywords = ["llm", "local-llm", "gpu", "vram", "huggingface", "inference", "hardware", "cli", "recommendation"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -33,12 +31,13 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/Andyyyy64/whichllm"
-Repository = "https://github.com/Andyyyy64/whichllm"
-"Bug Tracker" = "https://github.com/Andyyyy64/whichllm/issues"
-Changelog = "https://github.com/Andyyyy64/whichllm/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/holl4ndtv/what-llm-can-you-choose"
+Repository = "https://github.com/holl4ndtv/what-llm-can-you-choose"
+"Bug Tracker" = "https://github.com/holl4ndtv/what-llm-can-you-choose/issues"
+"Based on" = "https://github.com/Andyyyy64/whichllm"
 
 [project.scripts]
+what-llm-can-you-choose = "whichllm.cli:app"
 whichllm = "whichllm.cli:app"
 
 [build-system]

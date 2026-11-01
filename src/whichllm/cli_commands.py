@@ -6,6 +6,7 @@ from whichllm.commands.upgrade import upgrade_command
 from whichllm.commands.run import run_command
 from whichllm.commands.snippet import snippet_command
 from whichllm.commands.hardware import hardware_command
+from whichllm.commands.ui import ui_command
 
 __all__ = [
     "main_command",
@@ -14,4 +15,5 @@ __all__ = [
     "run_command",
     "snippet_command",
     "hardware_command",
+    "ui_command",
 ]

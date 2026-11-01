@@ -23,6 +23,7 @@ from whichllm.cli_commands import (
     plan_command,
     run_command,
     snippet_command,
+    ui_command,
     upgrade_command,
 )
 from whichllm.cli_shared import _print_version
@@ -343,4 +344,15 @@ def hardware(
     )
 
 
-__all__ = ["app", "main", "plan", "upgrade", "run", "snippet", "hardware"]
+@app.command()
+def ui(
+    port: int = typer.Option(8765, "--port", "-p", help="Port on 127.0.0.1"),
+    no_browser: bool = typer.Option(
+        False, "--no-browser", help="Do not open the browser"
+    ),
+):
+    """Open the local web UI ("What LLM can you choose?")."""
+    return ui_command(port=port, open_browser=not no_browser)
+
+
+__all__ = ["app", "main", "plan", "upgrade", "run", "snippet", "hardware", "ui"]

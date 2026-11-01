@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What LLM can you choose?</title>
+<meta name="description" content="Local AI models ranked for this machine, by real benchmarks.">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<a class="skip" href="#ledger">Skip to the model list</a>
+
+<header class="mast">
+  <div class="mast-in">
+    <img class="mast-mark" src="assets/mark.svg" width="40" height="40" alt="">
+    <div class="mast-title">
+      <h1>What LLM can you choose<span class="q">?</span></h1>
+      <p class="sub">the best AI models for this computer, ranked by real test scores</p>
+    </div>
+    <div class="mast-tools">
+      <span id="age" class="age" aria-live="polite"></span>
+      <button type="button" id="rescan" class="btn btn-quiet">Rescan</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="deck">
+    <section id="plate" class="plate" aria-labelledby="plate-h">
+      <h2 id="plate-h" class="label">This machine</h2>
+      <div id="plate-body" class="plate-body" aria-live="polite">
+        <p class="plate-wait">Reading hardware</p>
+      </div>
+    </section>
+
+    <form id="controls" class="controls" aria-labelledby="controls-h" onsubmit="return false">
+      <h2 id="controls-h" class="label">Ask a different question</h2>
+
+      <fieldset class="field">
+        <legend>What will you use it for? <button type="button" class="info" data-hint="h-profile" aria-expanded="false" aria-controls="h-profile" aria-label="More about this choice">i</button></legend>
+        <p id="h-profile" class="hint" hidden>Pick the kind of work you want help with. The list re-sorts to show the models that do that work best.</p>
+        <div class="seg-group" id="f-profile" role="radiogroup" aria-label="What will you use it for?"></div>
+        <p id="profile-say" class="say" aria-live="polite"></p>
+      </fieldset>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="f-context">How much text at once? <button type="button" class="info" data-hint="h-context" aria-expanded="false" aria-controls="h-context" aria-label="More about this choice">i</button></label>
+          <p id="h-context" class="hint" hidden>AI does not read letters. It reads small pieces of words called tokens. One token is about three quarters of a word, so 1,000 tokens is about 750 words. This setting is how much text the AI can keep in mind at one time: your question, your files and its answer together. More text needs more memory, so fewer models fit.</p>
+          <select id="f-context"></select>
+        </div>
+        <div class="field">
+          <label for="f-top">How many models to show? <button type="button" class="info" data-hint="h-top" aria-expanded="false" aria-controls="h-top" aria-label="More about this choice">i</button></label>
+          <p id="h-top" class="hint" hidden>The list is the best matches for this computer, taken live from Hugging Face (the big public library of AI models). Show fewer for a short answer, more to compare.</p>
+          <select id="f-top"></select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="f-gpu">Try a different computer <button type="button" class="info" data-hint="h-gpu" aria-expanded="false" aria-controls="h-gpu" aria-label="More about this choice">i</button></label>
+        <p id="h-gpu" class="hint" hidden>Thinking about a new computer? Pick one and the list shows what it could run. The GB number is the memory the AI can use. More GB means bigger, smarter models fit. Nothing changes on your machine.</p>
+        <select id="f-gpu"></select>
+      </div>
+
+      <div class="field">
+        <label class="check" for="f-fit">
+          <input type="checkbox" id="f-fit">
+          <span class="check-box" aria-hidden="true"></span>
+          <span>Only show models that run fast <button type="button" class="info" data-hint="h-fit" aria-expanded="false" aria-controls="h-fit" aria-label="More about this choice">i</button></span>
+        </label>
+        <p id="h-fit" class="hint" hidden>A model has to be loaded into your computer's fast memory to run well. If it fits completely, it runs fast. If it is too big, part of it waits in slower memory. It still works, but slowly. Tick this box to hide the slow ones.</p>
+      </div>
+    </form>
+  </div>
+
+  <section id="ledger" class="ledger" aria-labelledby="ledger-h" aria-busy="true">
+    <div class="ledger-head">
+      <h2 id="ledger-h">The ranking</h2>
+      <p id="ledger-note" class="ledger-note"></p>
+      <p class="ledger-help">What do these numbers mean? <button type="button" class="info" data-hint="h-read" aria-expanded="false" aria-controls="h-read" aria-label="What the numbers in the list mean">i</button></p>
+      <div id="h-read" class="hint" hidden>
+        <p>Memory it uses: how much of this computer's AI memory the model takes while it runs. The bar shows the model file, room for your text, and what is left.</p>
+        <p>Download size: the file you download once.</p>
+        <p>Speed: how fast it writes, in tokens a second. A token is a piece of a word, about three quarters of a word. 10 tokens a second is faster than most people read.</p>
+        <p>Quality score: how well it did in public tests. Higher is better.</p>
+        <p>Tags like Q4_K_M or Q6_K name the file version. A lower number means a smaller file with a little less quality. Q8 is close to full quality.</p>
+      </div>
+    </div>
+    <div id="ledger-cols" class="cols" aria-hidden="true">
+      <span class="c-rank">No.</span>
+      <span class="c-model">Model</span>
+      <span class="c-mem">Memory it uses <em id="cols-scale"></em></span>
+      <span class="c-size">Download size</span>
+      <span class="c-speed">Speed</span>
+      <span class="c-score">Quality score</span>
+      <span class="c-act"></span>
+    </div>
+    <div id="ledger-body"></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <img src="assets/logo.svg" height="28" alt="What LLM can you choose?" class="foot-logo">
+  <p>Runs on your machine at 127.0.0.1. Nothing downloads from this page. Speeds are estimates, not stopwatch runs.</p>
+</footer>
+
+<dialog id="drawer" class="drawer" aria-labelledby="drawer-title">
+  <div id="drawer-body"></div>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>

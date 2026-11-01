@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="320" viewBox="0 0 480 320" role="img" aria-labelledby="title desc">
+  <title id="title">Scanning local hardware</title>
+  <desc id="desc">A scanning line passes over a chip and its partly filled memory gauge.</desc>
+  <style>
+    .scan { animation: scan 4s ease-in-out infinite; }
+    @keyframes scan {
+      0%, 100% { transform: translateY(-44px); }
+      50% { transform: translateY(44px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .scan { animation: none; }
+    }
+  </style>
+  <!-- Quiet registration corners and board traces frame the active chip. -->
+  <g fill="none" stroke="currentColor" stroke-width="1" opacity="0.2">
+    <path d="M124 104V72H156M324 72H356V104M124 216V248H156M324 248H356V216"/>
+    <path d="M72 128H112L128 144H152M328 176H352L368 192H408"/>
+    <path d="M88 208H112L128 192H152M328 128H352L368 112H392"/>
+    <circle cx="72" cy="128" r="3"/><circle cx="408" cy="192" r="3"/>
+    <circle cx="88" cy="208" r="3"/><circle cx="392" cy="112" r="3"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="miter">
+    <path d="M168 88H288L312 112V232H168Z"/>
+    <path d="M200 72V88M224 72V88M256 72V88M280 72V88
+             M200 232V248M224 232V248M256 232V248M280 232V248
+             M152 120H168M152 144H168M152 176H168M152 200H168
+             M312 120H328M312 144H328M312 176H328M312 200H328"/>
+    <path d="M196 116H284V204H196Z" stroke-width="2"/>
+  </g>
+  <path d="M204 172H240V152H276V196H204Z" fill="#E4572E" opacity="0.18"/>
+  <path d="M204 172H240V152H276" fill="none" stroke="#E4572E" stroke-width="2"/>
+  <g class="scan" fill="none" stroke="#E4572E" stroke-width="2">
+    <path d="M144 160H336"/>
+    <path d="M144 156V164M336 156V164"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.3">
+    <path d="M224 276H256M240 272V280"/>
+  </g>
+</svg>
