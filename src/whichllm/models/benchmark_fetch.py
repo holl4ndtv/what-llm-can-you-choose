@@ -7,7 +7,10 @@ import logging
 
 import httpx
 
-from whichllm.models.benchmark_lineage import _apply_lineage_recency_demotion
+from whichllm.models.benchmark_lineage import (
+    _apply_lineage_recency_demotion,
+    _enforce_generation_order,
+)
 from whichllm.models.http import DEFAULT_ACCEPT_ENCODING
 from whichllm.utils import _current_version
 
@@ -114,6 +117,7 @@ async def fetch_benchmark_scores() -> dict[str, float]:
     combined: dict[str, float] = dict(frozen)
     combined.update(current)
     combined = _apply_lineage_recency_demotion(combined, frozen, current)
+    combined = _enforce_generation_order(combined)
 
     logger.debug(f"Combined: {len(combined)} benchmark scores")
     return combined

@@ -61,3 +61,37 @@ def _apply_lineage_recency_demotion(
         factor = _lineage_recency_factor(k)
         out[k] = round(v * factor, 1)
     return out
+
+
+def _lineage_key(model_id: str) -> tuple[str, str, int] | None:
+    """Return (family, id with the version token blanked, generation) or None."""
+    lower = model_id.lower()
+    for family, (patterns, _max_idx) in _build_lineage_regex().items():
+        for regex, idx in patterns:
+            m = regex.search(lower)
+            if m and any(ch.isdigit() for ch in m.group()):
+                return family, lower[: m.start()] + "<v>" + lower[m.end() :], idx
+    return None
+
+
+def _enforce_generation_order(scores: dict[str, float]) -> dict[str, float]:
+    """Cap an older generation at the score of its newer sibling.
+
+    Sources use different scales and cover different models, so a model that
+    only one source knows (for example LiveBench) can look better than its
+    newer sibling that only another source knows. Same family, same size and
+    a newer generation with a score: the older one may not score higher.
+    """
+    best_newer: dict[tuple[str, str], list[tuple[int, float]]] = {}
+    keys = {k: _lineage_key(k) for k in scores}
+    for model_id, key in keys.items():
+        if key:
+            best_newer.setdefault(key[:2], []).append((key[2], scores[model_id]))
+    out = dict(scores)
+    for model_id, key in keys.items():
+        if not key:
+            continue
+        newer = [s for idx, s in best_newer[key[:2]] if idx > key[2]]
+        if newer and out[model_id] > max(newer):
+            out[model_id] = max(newer)
+    return out
